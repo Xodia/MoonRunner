@@ -66,11 +66,11 @@ extension DetailViewController : MKMapViewDelegate {
 	
 	func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer! {
 		
-		if overlay.isKindOfClass(MKPolyline.classForCoder()) {
-			var polyLine: MKPolyline = overlay as MKPolyline;
+		if overlay.isKindOfClass(MRPolyline.classForCoder()) {
+			var polyLine: MRPolyline = overlay as MRPolyline;
 			var aRenderer: MKPolylineRenderer = MKPolylineRenderer(polyline: polyLine)
-			aRenderer.strokeColor = UIColor.blackColor();
-			aRenderer.lineWidth = 3;
+			aRenderer.strokeColor = polyLine.color
+			aRenderer.lineWidth = 4
 			return aRenderer;
 		}
 		
@@ -130,7 +130,8 @@ extension DetailViewController : MKMapViewDelegate {
 			
 			// set the map bounds
 			self.mapView?.region = self.mapRegion()
-			self.mapView?.addOverlay(self.polyline())
+			var colors = MathManager.colorSegmentsForLocations(self.run.locations.array as [Location])
+			self.mapView?.addOverlays(colors)
 			// make the line(s!) on the map
 			
 		} else {
