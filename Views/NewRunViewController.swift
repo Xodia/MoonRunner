@@ -18,7 +18,7 @@ class NewRunViewController: UIViewController {
 	var seconds = 0
 	var distance = 0.0
 	var locationManager = CLLocationManager()
-	var locations = [AnyObject]()
+	var locations = [CLLocation]()
 	var timer: NSTimer!
 	
 	@IBOutlet weak var startButton: UIButton?
@@ -88,6 +88,38 @@ class NewRunViewController: UIViewController {
 		
 		actionSheet.actionSheetStyle = UIActionSheetStyle.Default
 		actionSheet.showInView(self.view)
+		
+		// Let's build the .json file !
+		self.buildGeoJSON()
+	}
+	
+	// MARK: - GeoJSON maker
+	
+	func buildGeoJSON() {
+		
+		var geoJson = NSMutableDictionary()
+		var points = NSMutableArray(capacity: locations.count)
+		geoJson.setObject("FeatureCollection", forKey: "type")
+		for location in self.locations {
+			var point = NSMutableDictionary()
+			
+			var properties = NSMutableDictionary()
+			properties.setObject(location.timestamp.timeIntervalSince1970, forKey: "timestamp")
+			
+			var geometry = NSMutableDictionary()
+			geometry.setObject("Point", forKey: "type")
+			geometry.setObject(NSArray(objects: location.coordinate.longitude, location.coordinate.latitude), forKey: "coordinates")
+			
+			point.setObject("Feature", forKey: "type")
+			point.setObject(geometry, forKey: "geometry")
+			point.setObject(properties, forKey: "properties")
+			points.addObject(point)
+		}
+		geoJson.setObject(points, forKey: "features")
+		var string = geoJson.toJson(true)
+		
+		println("JSON: \(string)")
+
 	}
 	
     // MARK: - Navigation
@@ -189,9 +221,9 @@ extension NewRunViewController: CLLocationManagerDelegate {
 			if newLocation.horizontalAccuracy < 20 {
 				
 				if self.locations.count > 0 {
-					self.distance += newLocation.distanceFromLocation(self.locations.last as CLLocation)
+					self.distance += newLocation.distanceFromLocation(self.locations.last)
 				}
-				self.locations.append(newLocation)
+				self.locations.append(newLocation as CLLocation)
 			}
 		
 		}
