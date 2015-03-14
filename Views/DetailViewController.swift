@@ -29,11 +29,43 @@ class DetailViewController: UIViewController {
 		self.configureView()
         // Do any additional setup after loading the view.
     }
+	
+	override func viewDidDisappear(animated: Bool) {
+		super.viewDidDisappear(animated)
+		self.applyMapViewMemoryHotFixOnDisappear()
+	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+	
+	func applyMapViewMemoryHotFixOnDisappear() {
+		self.applyMapViewMemoryHotFix()
+		self.mapView?.showsUserLocation = false
+		self.mapView?.delegate = nil
+		self.mapView?.removeFromSuperview()
+		self.mapView = nil
+	}
+	
+	func applyMapViewMemoryHotFix() {
+		switch self.mapView!.mapType {
+		
+		case MKMapType.Standard:
+			self.mapView?.mapType = MKMapType.Hybrid
+		case MKMapType.Hybrid:
+			self.mapView?.mapType = MKMapType.Standard
+			
+		default:
+			break
+		}
+		self.mapView?.mapType = MKMapType.Standard
+	}
+	
+	func  mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
+		//self.applyMapViewMemoryHotFix()
+	}
+	
 	
 	// MARK: - Methods
 	func configureView() {
