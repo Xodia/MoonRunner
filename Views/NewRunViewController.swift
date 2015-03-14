@@ -127,7 +127,9 @@ class NewRunViewController: UIViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 
-		(segue.destinationViewController as DetailViewController).run = self.run
+		if segue.destinationViewController is DetailViewController {
+			(segue.destinationViewController as DetailViewController).run = self.run
+		}
 
 	}
 

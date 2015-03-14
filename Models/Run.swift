@@ -15,5 +15,4 @@ class Run: NSManagedObject {
     @NSManaged var duration: NSNumber
     @NSManaged var timestamp: NSDate
     @NSManaged var locations: NSOrderedSet
-
 }
